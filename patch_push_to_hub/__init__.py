@@ -164,12 +164,12 @@ def patch_push_to_hub(
     with working_or_temp_dir(working_dir=working_dir, use_temp_dir=use_temp_dir) as work_dir:
         files_timestamps = self._get_files_timestamps(work_dir)
 
+        # Save all files.
+        self.save_pretrained(work_dir, max_shard_size=max_shard_size, safe_serialization=safe_serialization)
+
         readme_path = os.path.join(work_dir, "README.md")
         if not os.path.exists(readme_path):
             raise ValueError("No README.md found in '" + work_dir + "'")
-
-        # Save all files.
-        self.save_pretrained(work_dir, max_shard_size=max_shard_size, safe_serialization=safe_serialization)
 
         return self._upload_modified_files(
             work_dir,
