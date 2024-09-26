@@ -23,24 +23,21 @@ def upload(
     model_type: str,
     model_name: str,
     upload_name: str,
+    readme: Path,
     public: bool = False,
-    readme: Path = None,
 ):
+    if not readme.exists():
+        raise FileNotFoundError(readme.as_posix())
+    print(f"Copying README.md from {readme.as_posix()}")
+
     model_class = _resolve_import(model_type)
     model = model_class.from_pretrained(model_name)
     model.save_pretrained("models/" + upload_name)
 
-    if readme and readme.exists():
-        print(f"Copying README.md from {readme.as_posix()}")
-        with (
-            readme.open("r") as f_in,
-            open("models/" + upload_name + "/README.md", "w") as f_out,
-        ):
-            f_out.write(f_in.read())
-
     model = model_class.from_pretrained("models/" + upload_name)
     patch_push_to_hub(
         model,
+        readme=readme,
         repo_id=upload_name,
         private=not public,
         use_temp_dir=True,
@@ -50,6 +47,7 @@ def upload(
 def patch_push_to_hub(
     self: PushToHubMixin,
     repo_id: str,
+    readme: Path,
     use_temp_dir: Optional[bool] = None,
     commit_message: Optional[str] = None,
     private: Optional[bool] = None,
@@ -68,6 +66,8 @@ def patch_push_to_hub(
     Parameters:
         self (`PushToHubMixin`):
             The model/tokenizer/etc in question
+        readme (`Path`):
+            The location of the README.md file to be copied.
         repo_id (`str`):
             The name of the repository you want to push your {object} to. It should contain your organization name
             when pushing to a given organization.
@@ -168,6 +168,15 @@ def patch_push_to_hub(
         self.save_pretrained(work_dir, max_shard_size=max_shard_size, safe_serialization=safe_serialization)
 
         readme_path = os.path.join(work_dir, "README.md")
+        if not readme.exists():
+            raise FileNotFoundError(readme.as_posix() + " does not exist")
+
+        with (
+            readme.open("r") as f_in,
+            open(readme_path, "w") as f_out,
+        ):
+            f_out.write(f_in.read())
+
         if not os.path.exists(readme_path):
             raise ValueError("No README.md found in '" + work_dir + "'")
 
