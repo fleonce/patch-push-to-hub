@@ -1,5 +1,6 @@
 import os
 import warnings
+from pathlib import Path
 from typing import Optional, Union, List
 
 from with_argparse import with_argparse
@@ -23,12 +24,20 @@ def upload(
     model_name: str,
     upload_name: str,
     public: bool = False,
+    readme: Optional[Path] = None,
 ):
     model_class = _resolve_import(model_type)
     model = model_class.from_pretrained(model_name)
     model.save_pretrained("models/" + upload_name)
-    model = model_class.from_pretrained("models/" + upload_name)
 
+    if readme and readme.exists():
+        with (
+            readme.open("r") as f_in,
+            open("models/" + upload_name + "/README.md") as f_out,
+        ):
+            f_out.write(f_in.read())
+
+    model = model_class.from_pretrained("models/" + upload_name)
     patch_push_to_hub(
         model,
         repo_id=upload_name,
