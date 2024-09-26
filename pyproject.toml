@@ -1,0 +1,18 @@
+[project]
+name = "patch-push-to-hub"
+description = "Upload models to huggingface.co with a custom designed model card (README.md)"
+version = "0.0.1"
+dependencies = [
+    "with_argparse",
+    "transformers"
+]
+requires-python = ">= 3.10"
+
+[project.urls]
+repository = "https://github.com/fleonce/patch-push-to-hub"
+
+[project.scripts]
+upload-model = "patch_push_to_hub:upload"
+
+[tool.setuptools]
+packages = ["patch_push_to_hub"]
