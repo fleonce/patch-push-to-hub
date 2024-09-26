@@ -1,7 +1,7 @@
 [project]
 name = "patch-push-to-hub"
 description = "Upload models to huggingface.co with a custom designed model card (README.md)"
-version = "0.0.1"
+version = "0.0.2rc1"
 dependencies = [
     "with_argparse",
     "transformers"
