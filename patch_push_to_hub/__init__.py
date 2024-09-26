@@ -31,9 +31,10 @@ def upload(
     model.save_pretrained("models/" + upload_name)
 
     if readme and readme.exists():
+        print(f"Copying README.md from {readme.as_posix()}")
         with (
             readme.open("r") as f_in,
-            open("models/" + upload_name + "/README.md") as f_out,
+            open("models/" + upload_name + "/README.md", "w") as f_out,
         ):
             f_out.write(f_in.read())
 
