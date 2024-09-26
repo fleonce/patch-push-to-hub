@@ -24,7 +24,7 @@ def upload(
     model_name: str,
     upload_name: str,
     public: bool = False,
-    readme: Optional[Path] = None,
+    readme: Path = None,
 ):
     model_class = _resolve_import(model_type)
     model = model_class.from_pretrained(model_name)
